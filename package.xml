@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>multi_robot_stage</name>
+  <version>2.2.0</version>
+  <description>
+    The simulated experimental environment for multi-robot patrol in the stage simulator of ROS (Robot Operating System). The robot can navigate independently and rviz can give the goals seperately and show the trajectory etc.
+  </description>
+
+  <maintainer email="minglong_l@163.com">Minglong Li</maintainer>
+  <author email="minglong_l@163.com">Minglong Li</author>
+  <license>BSD</license>
+
+  
+  <url type="repository">https://github.com/ferherranz/multi_robot_stage</url>
+  <url type="bugtracker">https://github.com/ferherranz/multi_robot_stage/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>stage_ros</run_depend>
+  <run_depend>navigation</run_depend>
+  <run_depend>turtlebot_description</run_depend>
+  <run_depend>collvoid_local_planner</run_depend>
+  <run_depend>yocs_virtual_sensor</run_depend>
+  <run_depend>yocs_velocity_smoother</run_depend>
+</package>

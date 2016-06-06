@@ -1,0 +1,34 @@
+<launch>
+
+  <arg name="odom_frame_id"   default="odom"/>
+  <arg name="base_frame_id"   default="base_link"/>
+  <arg name="global_frame_id" default="/map"/>
+  <arg name="odom_topic" default="odom" />
+  <arg name="cmd_vel_topic" default="cmd_vel" />
+  <arg name="scan_topic" default="scan" />
+  <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+
+    
+    <rosparam command="load" file="$(find multi_robot_stage)/params/params_turtle.yaml" />
+    <rosparam command="load" file="$(find multi_robot_stage)/params/collvoid_config.yaml" />
+    
+    
+    <!-- reset frame_id parameters using user input data -->
+    <param name="global_costmap/global_frame" value="$(arg global_frame_id)"/>
+    <param name="global_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+    <param name="local_costmap/global_frame" value="$(arg odom_frame_id)"/>
+    <param name="local_costmap/robot_base_frame" value="$(arg base_frame_id)"/>
+
+   
+    <param name="base_local_planner" value="collvoid_local_planner/CollvoidLocalPlanner" />
+    <!-- <param name="base_global_planner" value="collvoid_simple_global_planner/CollvoidSimpleGlobalPlanner" /> -->
+    <remap from="/position_share_in" to="/position_share" />
+    <remap from="/position_share_out" to="/position_share" />
+
+    <remap from="scan" to="$(arg scan_topic)"/>
+    <remap from="map" to="/map" />
+
+
+  </node>
+  
+</launch>

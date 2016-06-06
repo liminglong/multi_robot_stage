@@ -1,0 +1,53 @@
+<!-- xml -->
+<launch>
+    <arg name="robot_name"/>
+    <arg name="init_pose"/>
+   
+    <arg name="base"      value="$(optenv TURTLEBOT_BASE kobuki)"/> <!-- create, roomba -->
+    <arg name="battery"   value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)"/>  <!-- /proc/acpi/battery/BAT0 --> 
+    <arg name="stacks"    value="$(optenv TURTLEBOT_STACKS hexagons)"/>  <!-- circles, hexagons --> 
+    <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro --> 
+
+    <param name="/use_sim_time" value="true"/>
+  
+    <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find turtlebot_description)/robots/$(arg base)_$(arg stacks)_$(arg 3d_sensor).urdf.xacro'" />
+    <param name="robot_description" command="$(arg urdf_file)" />
+
+    <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/> 
+ 
+    <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+	  args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+      <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" />
+      <remap from="cmd_vel_mux/output" to="cmd_vel"/>
+    </node>
+
+    
+    
+    <include file="$(find multi_robot_stage)/launch/includes/amcl_multirobot.launch.xml">
+      <arg name="use_map_topic"             value="true"/>
+      <arg name="global_frame_id" value="/map"/>
+      <arg name="odom_frame_id"   value="$(arg robot_name)/odom"/>
+      <arg name="base_frame_id"   value="$(arg robot_name)/base_footprint"/>
+      <arg name="scan_topic"   value="base_scan"/>
+    
+    </include>
+    
+    <!--
+    <node name="fake_localization" pkg="fake_localization"  type="fake_localization" respawn="false">
+      <param name="global_frame_id" value="/map"/>
+      <param name="odom_frame_id"   value="$(arg robot_name)/odom"/>
+      <param name="base_frame_id"   value="$(arg robot_name)/base_footprint"/>
+    </node> 
+    -->
+
+    <include file="$(find multi_robot_stage)/launch/includes/move_base_multirobot_collvoid.launch.xml">
+      <arg name="scan_topic"   value="base_scan"/>
+    </include>
+   
+
+    <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" output="screen">      
+      <param name="base_frame"             value="$(arg robot_name)/base_link"/> 
+    </node> 
+    
+    
+</launch>
